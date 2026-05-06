@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Digit Recognizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      color: #333;
+      padding: 30px;
+      border-radius: 15px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input[type="file"] {
+      margin: 15px 0;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #5a67d8;
+    }
+
+    #preview {
+      margin-top: 15px;
+      max-width: 100px;
+      display: none;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Digit Recognizer</h1>
+
+    <input type="file" id="fileInput" accept="image/*">
+    <br>
+
+    <img id="preview" />
+
+    <br><br>
+    <button onclick="predict()">Predict</button>
+
+    <div class="result" id="result"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <script>
+    const API_URL = "API_URL/predict"; // Replace with your Render URL
+
+    const fileInput = document.getElementById("fileInput");
+    const preview = document.getElementById("preview");
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+      }
+    });
+
+    async function predict() {
+      const resultDiv = document.getElementById("result");
+      const errorDiv = document.getElementById("error");
+
+      resultDiv.innerText = "";
+      errorDiv.innerText = "";
+
+      const file = fileInput.files[0];
+
+      if (!file) {
+        errorDiv.innerText = "Please upload an image.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        resultDiv.innerText = "Predicting...";
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        // Adjust this depending on your API response format
+        const prediction = data.prediction || data.result || JSON.stringify(data);
+
+        resultDiv.innerText = "Prediction: " + prediction;
+
+      } catch (error) {
+        resultDiv.innerText = "";
+        errorDiv.innerText = "Error connecting to API.";
+        console.error(error);
+      }
+    }
+  </script>
+
+</body>
+</html>
