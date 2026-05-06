@@ -1,0 +1,6 @@
+{
+  "name": "Digit Recognizer AI",
+  "description": "A machine learning web application that recognizes hand-drawn digits using a scikit-learn model and FastAPI backend.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
